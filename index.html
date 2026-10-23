@@ -1,123 +1,245 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0}</style>
 <title>Checklist de Ações Comerciais</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--tx:#1f2430;--mut:#6b7385;--bd:#dde1e8;--pri:#2a5bd7;--ok:#1e8e4e;--okbg:#e6f5ec}
-@media(prefers-color-scheme:dark){:root{--bg:#14171d;--card:#1d222b;--tx:#e8ebf0;--mut:#98a1b3;--bd:#2d3441;--pri:#6e9bff;--ok:#4cc27f;--okbg:#17301f}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,Segoe UI,sans-serif}
-header{padding:16px;max-width:900px;margin:auto}
-h1{font-size:20px;margin:0 0 10px}
+/* Layout: cabeçalho fixo com a ação e o progresso geral, depois um cartão por squad com os itens em lista */
+:root{--bg:#f3f5f8;--card:#ffffff;--tx:#1b2330;--mut:#5f6b7e;--bd:#d9dee7;--pri:#1f4fbf;--priTx:#ffffff;--ok:#17703f;--okbg:#e7f4ec;--warn:#9a5b00;--font:'IBM Plex Sans',system-ui,'Segoe UI',sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161d;--card:#1b212b;--tx:#e6e9ef;--mut:#9aa5b8;--bd:#2c3441;--pri:#7ea3ff;--priTx:#0d1424;--ok:#5fcf8e;--okbg:#16301f;--warn:#e0a24a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161d;--card:#1b212b;--tx:#e6e9ef;--mut:#9aa5b8;--bd:#2c3441;--pri:#7ea3ff;--priTx:#0d1424;--ok:#5fcf8e;--okbg:#16301f;--warn:#e0a24a;color-scheme:dark}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 var(--font);padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:22px;margin:0 0 12px;font-weight:600;text-wrap:balance}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-select,input,textarea,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px 10px}
-button{cursor:pointer}button.p{background:var(--pri);color:#fff;border-color:var(--pri)}
-main{max-width:900px;margin:auto;padding:0 16px 40px}
-.squad{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin-bottom:16px;overflow:hidden}
-.squad>h2{margin:0;padding:12px 14px;font-size:16px;display:flex;justify-content:space-between;border-bottom:1px solid var(--bd)}
-.squad>h2 span{color:var(--mut);font-weight:400;font-size:13px}
-.item{padding:12px 14px;border-bottom:1px solid var(--bd)}
-.item:last-child{border:0}
-.item.done{background:var(--okbg)}
-.top{display:flex;gap:10px;align-items:flex-start}
-.top input[type=checkbox]{width:20px;height:20px;margin-top:2px;flex:none}
-.meta{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0 30px;align-items:center}
-.meta input[type=text]{width:170px}.meta input[type=date]{width:150px}
-.meta textarea{flex:1 1 100%;min-height:36px;resize:vertical}
-.file{font-size:13px;color:var(--mut)}
-.file a{color:var(--pri)}
-.tag{font-size:12px;color:var(--mut)}
+select,input,textarea,button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;min-width:0}
+button{cursor:pointer}
+button.p{background:var(--pri);color:var(--priTx);border-color:var(--pri);font-weight:500}
+button.link{border:0;background:none;color:var(--pri);padding:0 4px;text-decoration:underline}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.prog{margin:14px 0 20px;display:flex;align-items:center;gap:12px;color:var(--mut);font-size:14px}
+.track{flex:1;height:8px;background:var(--bd);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--ok);width:0}
+.sq{background:var(--card);border:1px solid var(--bd);border-radius:10px;margin-bottom:16px}
+.sq>h2{margin:0;padding:12px 16px;font-size:15px;letter-spacing:.04em;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--bd);font-weight:600}
+.sq>h2 span{color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0;font-size:13px;font-variant-numeric:tabular-nums}
+.it{padding:12px 16px;border-bottom:1px solid var(--bd)}
+.it:last-child{border-bottom:0}
+.it.ok{background:var(--okbg)}
+.top{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.top input{width:20px;height:20px;margin-top:2px;flex:none;padding:0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 0 30px}
+.meta input[type=text]{width:180px;max-width:100%}
+.meta input[type=date]{width:150px}
+.meta textarea{flex:1 1 100%;min-height:38px;resize:vertical}
+.small{font-size:13px;color:var(--mut)}
+.small a{color:var(--pri)}
+.empty{padding:32px 16px;text-align:center;color:var(--mut);background:var(--card);border:1px dashed var(--bd);border-radius:10px}
+.msg{font-size:13px;color:var(--warn);margin-top:8px}
 </style>
-</head>
-<body>
-<header>
-  <h1>Checklist de Ações — Time Comercial</h1>
+
+<div class="wrap">
+  <h1>Checklist de Ações Comerciais</h1>
   <div class="bar">
     <select id="sel" aria-label="Ação"></select>
-    <button id="nova">+ Nova ação</button>
-    <button id="exp">Exportar backup</button>
-    <button id="imp">Importar backup</button>
-    <button id="del">Excluir ação</button>
-    <input type="file" id="impf" accept=".json" hidden>
+    <button id="nova" class="p" type="button">Nova ação</button>
+    <span id="novaBox" hidden class="bar">
+      <input id="novoNome" type="text" placeholder="Ex.: Ação de Fluxo – Nov/26" aria-label="Nome da nova ação" size="28">
+      <button id="criar" class="p" type="button">Criar</button>
+      <button id="cancelar" type="button">Cancelar</button>
+    </span>
+    <button id="excluir" type="button">Excluir ação</button>
+    <span id="excluirBox" hidden class="bar">
+      <span class="small">Excluir esta ação e todos os registros?</span>
+      <button id="confirma" type="button">Sim, excluir</button>
+      <button id="nao" type="button">Não</button>
+    </span>
   </div>
-  <p class="tag">Etapa 2 · O registro (anexo/observação) é opcional. Os dados ficam salvos neste navegador; use "Exportar backup" para guardar ou compartilhar.</p>
-</header>
-<main id="main"></main>
+  <div id="msg" class="msg" hidden></div>
+  <div class="prog"><div class="track"><div class="fill" id="fill"></div></div><span id="progTxt"></span></div>
+  <main id="main"><div class="empty">Carregando…</div></main>
+</div>
+
+<script>
+/* Fora do Claude (ex.: GitHub Pages) não há banco compartilhado: este adaptador guarda tudo no navegador (localStorage). */
+(function(){
+  if(window.claude&&window.claude.use)return;
+  const KEY='checklist_acoes_v2';
+  let data={};
+  try{data=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+  if(!Object.keys(data).some(k=>k.indexOf('acoes/')===0))data['acoes/checklist']={nome:'Checklist',criada:Date.now()};
+  const subs=new Set();
+  const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){throw {code:'quota_exceeded',message:'Armazenamento cheio'}}};
+  const notify=()=>subs.forEach(f=>f());
+  window.addEventListener('storage',e=>{if(e.key===KEY){try{data=JSON.parse(e.newValue)||{}}catch(x){}notify()}});
+  const snap=(id,v)=>({id,exists:v!==undefined,data:()=>v});
+  function docRef(path){
+    return{id:path.split('/').pop(),path,
+      get:async()=>snap(path.split('/').pop(),data[path]),
+      set:async d=>{data[path]=JSON.parse(JSON.stringify(d));persist();notify()},
+      update:async d=>{data[path]={...data[path],...d};persist();notify()},
+      delete:async()=>{delete data[path];persist();notify()}};
+  }
+  function query(col,filters,order){
+    const run=()=>{
+      let rows=Object.keys(data).filter(p=>p.indexOf(col+'/')===0&&p.split('/').length===2).map(p=>({id:p.split('/')[1],v:data[p]}));
+      filters.forEach(([f,op,val])=>{rows=rows.filter(r=>op==='=='?r.v[f]===val:op==='!='?r.v[f]!==val:true)});
+      if(order){const [f,dir]=order;rows.sort((a,b)=>(a.v[f]>b.v[f]?1:a.v[f]<b.v[f]?-1:0)*(dir==='desc'?-1:1))}
+      const docs=rows.map(r=>snap(r.id,r.v));
+      return{docs,size:docs.length,empty:!docs.length};
+    };
+    const q={
+      where:(f,op,v)=>query(col,[...filters,[f,op,v]],order),
+      orderBy:(f,d)=>query(col,filters,[f,d||'asc']),
+      limit:()=>q,
+      get:async()=>run(),
+      onSnapshot:(next)=>{const fn=()=>next(run());subs.add(fn);setTimeout(fn,0);return()=>subs.delete(fn)},
+      doc:id=>docRef(col+'/'+(id||'d'+Date.now().toString(36))),
+    };
+    return q;
+  }
+  const db={doc:docRef,collection:c=>query(c,[],null)};
+  const assets={upload:file=>new Promise((res,rej)=>{
+    if(file.size>1.5*1024*1024){rej(new Error('grande'));return}
+    const r=new FileReader();r.onload=()=>res({id:'f'+Date.now().toString(36),url:r.result,sizeBytes:file.size,contentType:file.type});r.onerror=rej;r.readAsDataURL(file)})};
+  window.claude={use:async n=>n==='db'?db:n==='assets'?assets:null};
+})();
+</script>
 <script>
 const COMUM=['SALÃO','INÍCIOS','REINÍCIOS','BASE AMPLA','BASE VIP'];
 const T_COM=[
  ['com1','Garantir uma comunicação clara e assertiva com todo o time, assegurando que todos estejam cientes das mecânicas da ação.'],
  ['com2','Garantir uma comunicação clara com o time do FVC para divulgação em massa da ação junto à comunicação do estoque.'],
  ['com3','Verificar a efetividade da ação por meio do painel de ações.']];
+const slug=n=>n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'_');
 const SQUADS=[
- {id:'estoque',nome:'SQUAD ESTOQUE',tarefas:[['est1','Verificação e separação dos produtos da ação e transferência para o salão de vendas.']]},
- {id:'lideres',nome:'LÍDERES DE VENDAS',tarefas:[
+ {id:'estoque',nome:'Squad Estoque',t:[['est1','Verificação e separação dos produtos da ação e transferência para o salão de vendas.']]},
+ {id:'lideres',nome:'Líderes de Vendas',t:[
   ['lid1','Testar a ação para entender gargalos, possíveis problemas ou oportunidades.'],
   ['lid2','Estar ciente e entender a meta da ação e repassar para o time.']]},
- ...COMUM.map(n=>({id:n.toLowerCase().replace(/\s/g,'_').normalize('NFD').replace(/[̀-ͯ]/g,''),nome:'SQUAD '+n,
-   tarefas:[...(n==='SALÃO'?[['sal1','Organização e demonstração dos produtos de forma atrativa para os revendedores.']]:[]),...T_COM]}))
+ ...COMUM.map(n=>({id:slug(n),nome:'Squad '+n[0]+n.slice(1).toLowerCase(),
+   t:[...(n==='SALÃO'?[['sal1','Organização e demonstração dos produtos de forma atrativa para os revendedores.']]:[]),...T_COM]}))
 ];
-const KEY='checklist_acoes_v1', MAXF=1.5*1024*1024;
-let db;
-try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-if(!db||!db.acoes)db={atual:null,acoes:{}};
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert('Não foi possível salvar (armazenamento cheio). Exporte um backup e remova anexos grandes.')}};
+const TOTAL=SQUADS.reduce((s,q)=>s+q.t.length,0);
+const MAXF=10*1024*1024;
+let db=null,assets=null,canWrite=true,acoes=[],atual=null,regs={},unsubReg=null,pendingRender=false;
 const $=s=>document.querySelector(s);
-const hoje=()=>new Date().toISOString().slice(0,10);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function nova(){
-  const n=prompt('Nome da ação (ex.: Ação de Fluxo - Nov/26):');if(!n)return;
-  const id='a'+Date.now();db.acoes[id]={nome:n,itens:{}};db.atual=id;save();render();
-}
+const hoje=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const aviso=t=>{const m=$('#msg');m.textContent=t||'';m.hidden=!t};
+const rid=(sq,t)=>atual+'__'+sq+'__'+t;
+
 function render(){
-  const ids=Object.keys(db.acoes);
-  if(!ids.length){$('#main').innerHTML='<p>Crie sua primeira ação em “+ Nova ação”.</p>';$('#sel').innerHTML='';return}
-  if(!db.acoes[db.atual])db.atual=ids[0];
-  $('#sel').innerHTML=ids.map(i=>`<option value="${i}" ${i===db.atual?'selected':''}>${esc(db.acoes[i].nome)}</option>`).join('');
-  const a=db.acoes[db.atual];
-  $('#main').innerHTML=SQUADS.map(s=>{
-    const feitos=s.tarefas.filter(t=>a.itens[s.id+'|'+t[0]]?.done).length;
-    return `<section class="squad"><h2>${s.nome}<span>${feitos}/${s.tarefas.length} concluídos</span></h2>`+
-    s.tarefas.map(([tid,txt])=>{
-      const k=s.id+'|'+tid,it=a.itens[k]||{};
-      return `<div class="item ${it.done?'done':''}"><label class="top"><input type="checkbox" data-k="${k}" data-f="done" ${it.done?'checked':''}><span>${txt}</span></label>
-      <div class="meta">
-        <input type="date" data-k="${k}" data-f="data" value="${it.data||''}" aria-label="Data">
-        <input type="text" data-k="${k}" data-f="por" value="${esc(it.por)}" placeholder="Feito por" aria-label="Feito por">
-        <label class="file">📎 Registro (opcional): <input type="file" data-k="${k}" data-f="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"></label>
-        ${it.file?`<span class="file"><a href="${it.file.data}" download="${esc(it.file.name)}">${esc(it.file.name)}</a> <button data-k="${k}" data-rm="1">remover</button></span>`:''}
-        <textarea data-k="${k}" data-f="obs" placeholder="Observação (opcional)">${esc(it.obs)}</textarea>
-      </div></div>`}).join('')+'</section>'}).join('');
-}
-document.addEventListener('change',e=>{
-  const el=e.target,k=el.dataset.k;
-  if(el.id==='sel'){db.atual=el.value;save();return render()}
-  if(!k)return;
-  const a=db.acoes[db.atual],it=a.itens[k]=a.itens[k]||{};
-  const f=el.dataset.f;
-  if(f==='done'){it.done=el.checked;if(el.checked&&!it.data)it.data=hoje();if(el.checked&&!it.por){const u=localStorage.getItem('checklist_user')||'';it.por=u}}
-  else if(f==='file'){
-    const file=el.files[0];if(!file)return;
-    if(file.size>MAXF){alert('Arquivo acima de 1,5 MB. Reduza ou use um print menor.');el.value='';return}
-    const r=new FileReader();r.onload=()=>{it.file={name:file.name,data:r.result};save();render()};r.readAsDataURL(file);return;
+  const ids=acoes.map(a=>a.id);
+  $('#sel').innerHTML=acoes.map(a=>`<option value="${a.id}" ${a.id===atual?'selected':''}>${esc(a.nome)}</option>`).join('');
+  $('#excluir').hidden=!atual||!canWrite;$('#nova').hidden=!canWrite;
+  if(!atual){
+    $('#main').innerHTML='<div class="empty">Nenhuma ação cadastrada ainda. '+(canWrite?'Clique em “Nova ação” para criar o primeiro checklist.':'Peça a alguém com permissão de edição para criar a primeira ação.')+'</div>';
+    $('#fill').style.width='0';$('#progTxt').textContent='';return;
   }
-  else{it[f]=el.value;if(f==='por')try{localStorage.setItem('checklist_user',el.value)}catch(e){}}
-  save();render();
+  let feitos=0;
+  $('#main').innerHTML=SQUADS.map(s=>{
+    const n=s.t.filter(([t])=>regs[rid(s.id,t)]?.done).length;feitos+=n;
+    return `<section class="sq"><h2>${s.nome}<span>${n} de ${s.t.length} concluídos</span></h2>`+s.t.map(([tid,txt])=>{
+      const r=regs[rid(s.id,tid)]||{},k=s.id+'|'+tid,dis=canWrite?'':'disabled';
+      return `<div class="it ${r.done?'ok':''}"><label class="top"><input type="checkbox" id="c_${k}" data-k="${k}" data-f="done" ${r.done?'checked':''} ${dis}><span>${txt}</span></label>
+      <div class="meta">
+        <input type="date" id="d_${k}" data-k="${k}" data-f="data" value="${esc(r.data)}" aria-label="Data" ${dis}>
+        <input type="text" id="p_${k}" data-k="${k}" data-f="por" value="${esc(r.por)}" placeholder="Feito por" aria-label="Feito por" ${dis}>
+        ${assets&&canWrite?`<label class="small">Registro (opcional): <input type="file" id="f_${k}" data-k="${k}" data-f="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"></label>`:''}
+        ${r.anexo?`<span class="small"><a href="${esc(r.anexo.url)}" target="_blank" rel="noopener">${esc(r.anexo.name)}</a>${canWrite?` <button class="link" data-k="${k}" data-rm="1" type="button">remover</button>`:''}</span>`:''}
+        <textarea id="o_${k}" data-k="${k}" data-f="obs" placeholder="Observação (opcional)" ${dis}>${esc(r.obs)}</textarea>
+        ${r.atualizado?`<span class="small" style="flex:1 1 100%">Última atualização: ${esc(new Date(r.atualizado).toLocaleString('pt-BR'))}</span>`:''}
+      </div></div>`}).join('')+'</section>'}).join('');
+  $('#fill').style.width=(feitos/TOTAL*100)+'%';
+  $('#progTxt').textContent=feitos+' de '+TOTAL+' itens concluídos';
+}
+function safeRender(){
+  const a=document.activeElement;
+  if(a&&a.closest&&a.closest('#main')&&/INPUT|TEXTAREA/.test(a.tagName)&&a.type!=='checkbox'){pendingRender=true;return}
+  pendingRender=false;render();
+}
+document.addEventListener('focusout',()=>{if(pendingRender)setTimeout(safeRender,0)});
+
+async function gravar(k,patch){
+  const [sq,t]=k.split('|'),id=rid(sq,t);
+  const base=regs[id]||{acao:atual,squad:sq,tarefa:t};
+  const novo={...base,...patch,atualizado:Date.now()};
+  regs[id]=novo;
+  try{await db.doc('registros/'+id).set(novo);aviso('')}
+  catch(e){aviso('Não foi possível salvar: '+(e.code==='invalid_argument'?'seu acesso é somente leitura. Peça permissão de colaborador.':'tente novamente.'));if(e.code==='invalid_argument'){canWrite=false}}
+  render();
+}
+document.addEventListener('change',async e=>{
+  const el=e.target;
+  if(el.id==='sel'){escolher(el.value);return}
+  const k=el.dataset.k,f=el.dataset.f;if(!k||!db)return;
+  if(f==='done'){
+    const r=regs[rid(...k.split('|'))]||{};
+    const patch={done:el.checked};
+    if(el.checked){if(!r.data)patch.data=hoje();if(!r.por)patch.por=lsGet('chk_nome')}
+    return gravar(k,patch);
+  }
+  if(f==='file'){
+    const file=el.files[0];if(!file)return;
+    if(file.size>MAXF){aviso('Arquivo acima de 10 MB. Envie um menor.');el.value='';return}
+    try{const up=await assets.upload(file);await gravar(k,{anexo:{id:up.id,url:up.url,name:file.name}})}
+    catch(x){aviso('Não foi possível enviar o arquivo.')}
+    return;
+  }
+  if(f==='por')lsSet('chk_nome',el.value);
+  gravar(k,{[f]:el.value});
 });
 document.addEventListener('click',e=>{
-  if(e.target.dataset.rm){delete db.acoes[db.atual].itens[e.target.dataset.k].file;save();render()}
+  const t=e.target;
+  if(t.dataset&&t.dataset.rm)gravar(t.dataset.k,{anexo:null});
 });
-$('#nova').onclick=nova;
-$('#del').onclick=()=>{if(db.atual&&confirm('Excluir esta ação e todos os registros dela?')){delete db.acoes[db.atual];db.atual=null;save();render()}};
-$('#exp').onclick=()=>{
-  const b=new Blob([JSON.stringify(db)],{type:'application/json'}),u=URL.createObjectURL(b),l=document.createElement('a');
-  l.href=u;l.download='checklist_backup_'+hoje()+'.json';l.click();URL.revokeObjectURL(u)};
-$('#imp').onclick=()=>$('#impf').click();
-$('#impf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.acoes)throw 0;Object.assign(db.acoes,d.acoes);db.atual=db.atual||d.atual;save();render()}catch(x){alert('Arquivo inválido.')}};r.readAsText(f)};
-render();
+function escolher(id){
+  atual=id||null;lsSet('chk_acao',atual||'');
+  if(unsubReg){unsubReg();unsubReg=null}
+  regs={};render();
+  if(!atual||!db)return;
+  unsubReg=db.collection('registros').where('acao','==',atual).onSnapshot(s=>{
+    regs={};s.docs.forEach(d=>regs[d.id]=d.data());safeRender();
+  },e=>aviso('Não foi possível carregar os registros.'));
+}
+$('#nova').onclick=()=>{$('#novaBox').hidden=false;$('#nova').hidden=true;$('#novoNome').focus()};
+$('#cancelar').onclick=()=>{$('#novaBox').hidden=true;$('#nova').hidden=!canWrite;$('#novoNome').value=''};
+$('#criar').onclick=async()=>{
+  const nome=$('#novoNome').value.trim();if(!nome||!db)return;
+  const id='a'+Date.now().toString(36);
+  try{await db.doc('acoes/'+id).set({nome,criada:Date.now()});lsSet('chk_acao',id);$('#cancelar').onclick()}
+  catch(e){aviso('Não foi possível criar a ação. Seu acesso pode ser somente leitura.')}
+};
+$('#novoNome').addEventListener('keydown',e=>{if(e.key==='Enter')$('#criar').onclick()});
+$('#excluir').onclick=()=>{$('#excluirBox').hidden=false;$('#excluir').hidden=true};
+$('#nao').onclick=()=>{$('#excluirBox').hidden=true;$('#excluir').hidden=false};
+$('#confirma').onclick=async()=>{
+  const id=atual;$('#nao').onclick();if(!id)return;
+  try{
+    const s=await db.collection('registros').where('acao','==',id).get();
+    await Promise.all(s.docs.map(d=>db.doc('registros/'+d.id).delete()));
+    await db.doc('acoes/'+id).delete();
+  }catch(e){aviso('Não foi possível excluir.')}
+};
+
+(async()=>{
+  try{
+    const c=window.claude;
+    db=c?await c.use('db'):null;
+    assets=c?await c.use('assets'):null;
+    const user=c?await c.use('user'):null;
+    if(user){const w=user.can('data.write');if(w===false)canWrite=false}
+  }catch(e){}
+  if(!db){$('#main').innerHTML='<div class="empty">Entre na sua conta para ver e preencher o checklist.</div>';return}
+  db.collection('acoes').orderBy('criada','desc').onSnapshot(s=>{
+    acoes=s.docs.map(d=>({id:d.id,...d.data()}));
+    const salvo=lsGet('chk_acao');
+    const alvo=acoes.find(a=>a.id===atual)?atual:(acoes.find(a=>a.id===salvo)?salvo:(acoes[0]?acoes[0].id:null));
+    if(alvo!==atual||!unsubReg)escolher(alvo);else render();
+  },e=>{$('#main').innerHTML='<div class="empty">Não foi possível carregar o checklist.</div>'});
+})();
 </script>
-</body>
 </html>
